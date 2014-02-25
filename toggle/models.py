@@ -3,15 +3,17 @@ from couchdbkit.ext.django.schema import *
 
 
 TOGGLE_ID_PREFIX = 'hqFeatureToggle'
+ENTITY_TYPES = {"user": "enabled_users", "domain": "enabled_domains"}
 
 
 class Toggle(Document):
     """
     A very simple implementation of a feature toggle. Just a list of usernames
-    attached to a slug.
+    or domains attached to a slug.
     """
     slug = StringProperty()
     enabled_users = ListProperty()
+    enabled_domains = ListProperty()
 
     def save(self, **params):
         if ('_id' not in self._doc):

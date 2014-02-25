@@ -38,7 +38,8 @@ class ToggleTestCase(TestCase):
         users = ['prof', 'logan']
         toggle = Toggle(slug=slug, enabled_users=users)
         toggle.save()
-        self.assertTrue(toggle_enabled(slug, 'prof'))
-        self.assertTrue(toggle_enabled(slug, 'logan'))
-        self.assertFalse(toggle_enabled(slug, 'richard'))
-        self.assertFalse(toggle_enabled('gotham', 'prof'))
+        self.assertTrue(toggle_enabled(slug, 'user', 'prof'))
+        self.assertTrue(toggle_enabled(slug, 'user', 'logan'))
+        self.assertFalse(toggle_enabled(slug, 'user','richard'))
+        self.assertFalse(toggle_enabled('gotham', 'user', 'prof'))
+        self.assertFalse(toggle_enabled('gotham', 'domain', 'prof'))
