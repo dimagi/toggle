@@ -3,7 +3,8 @@ from django.conf import settings
 from django.core.cache import cache
 
 from .models import Toggle
-from .caching import update_toggle_cache, get_toggle_cache_key, namespaced_item
+from .caching import update_toggle_cache, get_toggle_cache_key, namespaced_item, update_toggle_document_in_cache, \
+    get_toggle_document_from_cache
 
 
 def toggle_enabled(slug, item, check_cache=True, namespace=None):
@@ -19,7 +20,11 @@ def toggle_enabled(slug, item, check_cache=True, namespace=None):
 
     if not settings.UNIT_TESTING or getattr(settings, 'DB_ENABLED', True):
         try:
-            toggle = Toggle.get(slug)
+            toggle = None
+            if check_cache:
+                toggle = get_toggle_document_from_cache(slug)
+            if toggle is None:
+                toggle = Toggle.get(slug)
             ret = item in toggle.enabled_users
         except ResourceNotFound:
             ret = False
@@ -41,4 +46,6 @@ def set_toggle(slug, item, enabled, namespace=None):
             toggle_doc.add(item)
         else:
             toggle_doc.remove(item)
+
+        update_toggle_document_in_cache(slug, toggle_doc)
         update_toggle_cache(slug, item, enabled)

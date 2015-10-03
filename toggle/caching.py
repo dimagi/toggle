@@ -1,4 +1,6 @@
+from __future__ import unicode_literals
 from django.core.cache import cache
+from toggle.models import ensure_doc_id_has_toggle_prefix, Toggle
 
 
 def clear_toggle_cache(slug, item, namespace=None):
@@ -20,3 +22,20 @@ def namespaced_item(item, namespace):
     return '{namespace}:{item}'.format(
         namespace=namespace, item=item
     ) if namespace is not None else item
+
+
+def update_toggle_document_in_cache(toggle_slug, toggle_doc):
+    cache_key = get_toggle_document_cache_key(toggle_slug)
+    cache.set(cache_key, toggle_doc.to_json())
+
+
+def get_toggle_document_from_cache(toggle_slug):
+    cache_key = get_toggle_document_cache_key(toggle_slug)
+    doc = cache.get(cache_key)
+    if doc:
+        return Toggle.wrap(doc)
+    return None
+
+
+def get_toggle_document_cache_key(toggle_slug):
+    return 'toggle-doc:{slug}'.format(slug=ensure_doc_id_has_toggle_prefix(toggle_slug))
