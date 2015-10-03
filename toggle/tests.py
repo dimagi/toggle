@@ -1,9 +1,21 @@
 from couchdbkit import ResourceConflict
 from dimagi.ext.couchdbkit import Document
 from django.conf import settings
-from django.test import TestCase
-from .models import generate_toggle_id, Toggle
+from django.test import TestCase, SimpleTestCase
+from .models import generate_toggle_id, Toggle, ensure_doc_id_has_toggle_prefix
 from .shortcuts import toggle_enabled, set_toggle
+
+
+class SimpleToggleTestCase(SimpleTestCase):
+
+    def test_generate_id(self):
+        self.assertEqual('hqFeatureToggle-sluggy', generate_toggle_id('sluggy'))
+
+    def test_ensure_prefix_adds(self):
+        self.assertEqual('hqFeatureToggle-sluggy', ensure_doc_id_has_toggle_prefix('sluggy'))
+
+    def test_ensure_prefix_doenst_add(self):
+        self.assertEqual('hqFeatureToggle-sluggy', ensure_doc_id_has_toggle_prefix('hqFeatureToggle-sluggy'))
 
 
 class ToggleTestCase(TestCase):
@@ -20,9 +32,6 @@ class ToggleTestCase(TestCase):
     @classmethod
     def tearDownClass(cls):
         settings.CACHES = cls.realcaches
-
-    def test_generate_id(self):
-        self.assertEqual('hqFeatureToggle-sluggy', generate_toggle_id('sluggy'))
 
     def test_save_and_get_id(self):
         slug = 'batcave'

@@ -20,8 +20,7 @@ class Toggle(Document):
 
     @classmethod
     def get(cls, docid, rev=None, db=None, dynamic_properties=True):
-        if not docid.startswith(TOGGLE_ID_PREFIX):
-            docid = generate_toggle_id(docid)
+        docid = ensure_doc_id_has_toggle_prefix(docid)
         return super(Toggle, cls).get(docid, rev=None, db=None, dynamic_properties=True)
 
     def add(self, item):
@@ -39,6 +38,12 @@ class Toggle(Document):
         if item in self.enabled_users:
             self.enabled_users.remove(item)
             self.save()
+
+
+def ensure_doc_id_has_toggle_prefix(docid):
+    if not docid.startswith(TOGGLE_ID_PREFIX):
+        return generate_toggle_id(docid)
+    return docid
 
 
 def generate_toggle_id(slug):
