@@ -21,7 +21,7 @@ class Toggle(Document):
     @classmethod
     def get(cls, docid, rev=None, db=None, dynamic_properties=True):
         docid = ensure_doc_id_has_toggle_prefix(docid)
-        return super(Toggle, cls).get(docid, rev=None, db=None, dynamic_properties=True)
+        return super(Toggle, cls).get(docid, rev=rev, db=db, dynamic_properties=dynamic_properties)
 
     def add(self, item):
         """
